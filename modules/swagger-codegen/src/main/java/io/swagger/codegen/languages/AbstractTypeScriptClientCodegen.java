@@ -32,10 +32,12 @@ import io.swagger.models.properties.StringProperty;
 
 public abstract class AbstractTypeScriptClientCodegen extends DefaultCodegen implements CodegenConfig {
     private static final String UNDEFINED_VALUE = "undefined";
+    private static final String DATATYPE_WITH_ENUM_SEPARATOR_OPTION_NAME = "datatypeWithEnumSeparator";
 
     protected String modelPropertyNaming= "camelCase";
     protected Boolean supportsES6 = true;
     protected HashSet<String> languageGenericTypes;
+    private String DATATYPE_WITH_ENUM_SEPARATOR = ".";
 
     public AbstractTypeScriptClientCodegen() {
         super();
@@ -119,6 +121,10 @@ public abstract class AbstractTypeScriptClientCodegen extends DefaultCodegen imp
         if (additionalProperties.containsKey(CodegenConstants.SUPPORTS_ES6)) {
             setSupportsES6(Boolean.valueOf(additionalProperties.get(CodegenConstants.SUPPORTS_ES6).toString()));
             additionalProperties.put("supportsES6", getSupportsES6());
+        }
+
+        if (additionalProperties.containsKey(DATATYPE_WITH_ENUM_SEPARATOR_OPTION_NAME)) {
+            DATATYPE_WITH_ENUM_SEPARATOR = (String) additionalProperties.get(DATATYPE_WITH_ENUM_SEPARATOR_OPTION_NAME);
         }
     }
 
@@ -396,6 +402,14 @@ public abstract class AbstractTypeScriptClientCodegen extends DefaultCodegen imp
         }
     }
 
+    private void updateDatatypeWithEnumInPlace(CodegenModel cm, CodegenProperty de) {
+        // name enum with model name, e.g. StatusEnum => Pet.StatusEnum
+        de.datatypeWithEnum = de.datatypeWithEnum.replace(
+            de.enumName,
+            cm.classname + DATATYPE_WITH_ENUM_SEPARATOR + de.enumName);
+        return;
+    }
+
     @Override
     public Map<String, Object> postProcessModels(Map<String, Object> objs) {
         // process enum in models
@@ -407,7 +421,14 @@ public abstract class AbstractTypeScriptClientCodegen extends DefaultCodegen imp
             for (CodegenProperty var : cm.vars) {
                 // name enum with model name, e.g. StatuEnum => Pet.StatusEnum
                 if (Boolean.TRUE.equals(var.isEnum)) {
-                    var.datatypeWithEnum = var.datatypeWithEnum.replace(var.enumName, cm.classname + "." + var.enumName);
+                    updateDatatypeWithEnumInPlace(cm, var);
+                }
+            }
+            if (cm.parent != null) {
+                for (CodegenProperty var : cm.allVars) {
+                    if (Boolean.TRUE.equals(var.isEnum)) {
+                        updateDatatypeWithEnumInPlace(cm, var);
+                    }
                 }
             }
         } 
