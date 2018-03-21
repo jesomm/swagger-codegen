@@ -37,7 +37,7 @@ public abstract class AbstractTypeScriptClientCodegen extends DefaultCodegen imp
     protected String modelPropertyNaming= "camelCase";
     protected Boolean supportsES6 = true;
     protected HashSet<String> languageGenericTypes;
-    private String DATATYPE_WITH_ENUM_SEPARATOR = ".";
+    private String DATATYPE_WITH_ENUM_SEPARATOR = "";
 
     public AbstractTypeScriptClientCodegen() {
         super();
