@@ -52,30 +52,19 @@ public abstract class AbstractTypeScriptClientCodegen extends DefaultCodegen imp
                 "varLocalPath", "queryParameters", "headerParams", "formParams", "useFormData", "varLocalDeferred",
                 "requestOptions",
                 // Typescript reserved words
-                "abstract", "await", "boolean", "break", "byte", "case", "catch", "char", "class", "const", "continue", "debugger", "default", "delete", "do", "double", "else", "enum", "export", "extends", "false", "final", "finally", "float", "for", "function", "goto", "if", "implements", "import", "in", "instanceof", "int", "interface", "let", "long", "native", "new", "null", "package", "private", "protected", "public", "return", "short", "static", "super", "switch", "synchronized", "this", "throw", "transient", "true", "try", "typeof", "var", "void", "volatile", "while", "with", "yield"));
+                "abstract", "await", "boolean", "break", "byte", "case", "catch", "char", "class", "const", "continue",
+                "debugger", "default", "delete", "do", "double", "else", "enum", "export", "extends", "false", "final",
+                "finally", "float", "for", "function", "goto", "if", "implements", "import", "in", "instanceof", "int",
+                "interface", "let", "long", "native", "new", "null", "package", "private", "protected", "public",
+                "return", "short", "static", "super", "switch", "synchronized", "this", "throw", "transient", "true",
+                "try", "typeof", "var", "void", "volatile", "while", "with", "yield"));
 
         languageSpecificPrimitives = new HashSet<>(Arrays.asList(
-                "string",
-                "String",
-                "boolean",
-                "Boolean",
-                "Double",
-                "Integer",
-                "Long",
-                "Float",
-                "Object",
-                "Array",
-                "Date",
-                "number",
-                "any",
-                "File",
-                "Error",
-                "Map"
-                ));
+                "any", "Array", "boolean", "Boolean", "Date", "Double", "Error", "File", "Float", "Integer", "Long",
+                "Map", "number", "Object", "string", "String"));
 
         languageGenericTypes = new HashSet<String>(Arrays.asList(
-                "Array"
-        ));
+                "Array"));
 
         instantiationTypes.put("array", "Array");
 
@@ -247,40 +236,31 @@ public abstract class AbstractTypeScriptClientCodegen extends DefaultCodegen imp
             if (sp.getDefault() != null) {
                 return "\"" + sp.getDefault() + "\"";
             }
-            return UNDEFINED_VALUE;
-        } else if (p instanceof BooleanProperty) {
-            return UNDEFINED_VALUE;
-        } else if (p instanceof DateProperty) {
-            return UNDEFINED_VALUE;
-        } else if (p instanceof DateTimeProperty) {
-            return UNDEFINED_VALUE;
+        // } else if (p instanceof BooleanProperty || p instanceof DateProperty ||  instanceof DateTimeProperty) {
+            // fall to undefined
         } else if (p instanceof DoubleProperty) {
             DoubleProperty dp = (DoubleProperty) p;
             if (dp.getDefault() != null) {
                 return dp.getDefault().toString();
             }
-            return UNDEFINED_VALUE;
         } else if (p instanceof FloatProperty) {
             FloatProperty fp = (FloatProperty) p;
             if (fp.getDefault() != null) {
                 return fp.getDefault().toString();
             }
-            return UNDEFINED_VALUE;
         } else if (p instanceof IntegerProperty) {
             IntegerProperty ip = (IntegerProperty) p;
             if (ip.getDefault() != null) {
                 return ip.getDefault().toString();
             }
-            return UNDEFINED_VALUE;
         } else if (p instanceof LongProperty) {
             LongProperty lp = (LongProperty) p;
             if (lp.getDefault() != null) {
                 return lp.getDefault().toString();
             }
-            return UNDEFINED_VALUE;
-        } else {
-            return UNDEFINED_VALUE;
         }
+
+        return UNDEFINED_VALUE;
     }
 
     @Override
@@ -342,11 +322,7 @@ public abstract class AbstractTypeScriptClientCodegen extends DefaultCodegen imp
 
     @Override
     public String toEnumValue(String value, String datatype) {
-        if ("number".equals(datatype)) {
-            return value;
-        } else {
-            return "\'" + escapeText(value) + "\'";
-        }
+        return "number".equals(datatype) ? value : "\'" + escapeText(value) + "\'";
     }
 
     @Override
@@ -384,22 +360,16 @@ public abstract class AbstractTypeScriptClientCodegen extends DefaultCodegen imp
         // ref: https://basarat.gitbooks.io/typescript/content/docs/enums.html
         enumName = camelize(enumName);
 
-        if (enumName.matches("\\d.*")) { // starts with number
-            return "_" + enumName;
-        } else {
-            return enumName;
-        }
+        // fix enumName that starts with number
+        return enumName.matches("\\d.*") ? "_" + enumName : enumName;
     }
 
     @Override
     public String toEnumName(CodegenProperty property) {
         String enumName = toModelName(property.name) + "Enum";
 
-        if (enumName.matches("\\d.*")) { // starts with number
-            return "_" + enumName;
-        } else {
-            return enumName;
-        }
+        // fix enumName that starts with number
+        return enumName.matches("\\d.*") ? "_" + enumName : enumName;
     }
 
     private void updateDatatypeWithEnumInPlace(CodegenModel cm, CodegenProperty de) {
