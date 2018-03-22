@@ -385,6 +385,57 @@ public abstract class AbstractTypeScriptClientCodegen extends DefaultCodegen imp
         return objs;
     }
 
+    @Override
+    public Map<String, Object> postProcessOperations(Map<String, Object> objs) {
+        super.postProcessOperations(objs);
+        if (objs != null) {
+            Map<String, Object> operations = (Map<String, Object>) objs.get("operations");
+            if (operations != null) {
+                List<CodegenOperation> ops = (List<CodegenOperation>) operations.get("operation");
+                for (CodegenOperation operation : ops) {
+                    processOperation(operation);
+                }
+            }
+        }
+        return objs;
+    }
+
+    protected void processOperation(CodegenOperation operation) {
+        List<CodegenParameter> allParams = operation.allParams;
+        if (allParams != null) {
+            for (CodegenParameter param : allParams) {
+                // add metadata to operation required for nickname update
+                if (param.paramName == "apiVersion") {
+                    if (param.defaultValue == ("1.0")) {
+                        operation.isBeta = false;
+                        operation.isV1 = true;
+                        operation.isV2 = false;
+                    } else if (param.defaultValue == ("2.0")) {
+                        operation.isBeta = false;
+                        operation.isV1 = false;
+                        operation.isV2 = true;
+                    } else {
+                        operation.isBeta = true;
+                        operation.isV1 = false;
+                        operation.isV2 = false;
+                    }
+                }
+            }
+        }
+
+        // fix nickname
+        if (operation.isV1) {
+            operation.operationId = operation.operationId.replace("apivversion", "v1");
+            operation.path = operation.path.replace("{version}", "1");
+        } else if (operation.isV2) {
+            operation.operationId = operation.operationId.replace("apivversion", "v2");
+            operation.path = operation.path.replace("{version}", "2");
+        } else {
+            operation.operationId = operation.operationId.replace("apiBeta", "beta");
+        }
+        operation.nickname = operation.operationId;
+    }
+
     public void setSupportsES6(Boolean value) {
         supportsES6 = value;
     }
