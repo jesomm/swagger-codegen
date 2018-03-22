@@ -269,10 +269,12 @@ public abstract class AbstractTypeScriptClientCodegen extends DefaultCodegen imp
         String type = null;
         if (typeMapping.containsKey(swaggerType)) {
             type = typeMapping.get(swaggerType);
-            if (languageSpecificPrimitives.contains(type))
+            if (languageSpecificPrimitives.contains(type)) {
                 return type;
-        } else
+            }
+        } else {
             type = swaggerType;
+        }
         return toModelName(type);
     }
 
@@ -377,7 +379,6 @@ public abstract class AbstractTypeScriptClientCodegen extends DefaultCodegen imp
         de.datatypeWithEnum = de.datatypeWithEnum.replace(
             de.enumName,
             cm.classname + DATATYPE_WITH_ENUM_SEPARATOR + de.enumName);
-        return;
     }
 
     @Override
