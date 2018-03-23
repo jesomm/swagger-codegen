@@ -10,12 +10,11 @@ import io.swagger.models.properties.*;
 
 public abstract class AbstractTypeScriptClientCodegen extends DefaultCodegen implements CodegenConfig {
     private static final String UNDEFINED_VALUE = "undefined";
-    private static final String DATATYPE_WITH_ENUM_SEPARATOR_OPTION_NAME = "datatypeWithEnumSeparator";
+    private static final String DATATYPE_WITH_ENUM_SEPARATOR = ".";
 
     protected String modelPropertyNaming= "camelCase";
     protected Boolean supportsES6 = true;
     protected HashSet<String> languageGenericTypes;
-    protected String DATATYPE_WITH_ENUM_SEPARATOR = ".";
 
     public AbstractTypeScriptClientCodegen() {
         super();
@@ -88,10 +87,6 @@ public abstract class AbstractTypeScriptClientCodegen extends DefaultCodegen imp
         if (additionalProperties.containsKey(CodegenConstants.SUPPORTS_ES6)) {
             setSupportsES6(Boolean.valueOf(additionalProperties.get(CodegenConstants.SUPPORTS_ES6).toString()));
             additionalProperties.put("supportsES6", getSupportsES6());
-        }
-
-        if (additionalProperties.containsKey(DATATYPE_WITH_ENUM_SEPARATOR_OPTION_NAME)) {
-            DATATYPE_WITH_ENUM_SEPARATOR = (String) additionalProperties.get(DATATYPE_WITH_ENUM_SEPARATOR_OPTION_NAME);
         }
     }
 
@@ -356,7 +351,11 @@ public abstract class AbstractTypeScriptClientCodegen extends DefaultCodegen imp
         // name enum with model name, e.g. StatusEnum => Pet.StatusEnum
         de.datatypeWithEnum = de.datatypeWithEnum.replace(
             de.enumName,
-            cm.classname + DATATYPE_WITH_ENUM_SEPARATOR + de.enumName);
+            cm.classname + getDatatypeWithEnumSeparator() + de.enumName);
+    }
+
+    protected String getDatatypeWithEnumSeparator() {
+        return DATATYPE_WITH_ENUM_SEPARATOR;
     }
 
     @Override

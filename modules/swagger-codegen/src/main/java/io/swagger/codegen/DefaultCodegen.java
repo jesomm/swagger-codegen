@@ -2836,9 +2836,17 @@ public class DefaultCodegen {
 
     protected void setReservedWordsLowerCase(List<String> words) {
         reservedWords = new HashSet<String>();
+        addReservedWordsLowerCase(words);
+    }
+
+    protected void addReservedWordsLowerCase(List<String> words) {
         for (String word : words) {
-            reservedWords.add(word.toLowerCase());
+            addReservedWordLowerCase(word);
         }
+    }
+
+    protected void addReservedWordLowerCase(String word) {
+        reservedWords.add(word.toLowerCase());
     }
 
     protected boolean isReservedWord(String word) {

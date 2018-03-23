@@ -8,12 +8,11 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class TypeScriptOwsApiClientCodegen extends TypeScriptFetchClientCodegen {
-    @Override
-    protected String DATATYPE_WITH_ENUM_SEPARATOR = "";
+    private static final String DATATYPE_WITH_ENUM_SEPARATOR = "";
 
     public TypeScriptOwsApiClientCodegen() {
         super();
-        reservedWords.add("url");
+        addReservedWordLowerCase("url");
     }
 
 
@@ -30,6 +29,11 @@ public class TypeScriptOwsApiClientCodegen extends TypeScriptFetchClientCodegen 
             }
         }
         return objs;
+    }
+
+    @Override
+    protected String getDatatypeWithEnumSeparator() {
+        return DATATYPE_WITH_ENUM_SEPARATOR;
     }
 
     protected String sanitizeVVersionOperationId(String opId) {
