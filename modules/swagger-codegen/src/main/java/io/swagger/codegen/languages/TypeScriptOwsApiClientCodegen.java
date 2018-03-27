@@ -15,6 +15,11 @@ public class TypeScriptOwsApiClientCodegen extends TypeScriptFetchClientCodegen 
         addReservedWordLowerCase("url");
     }
 
+    @Override
+    protected void setOutputDirFields() {
+        outputFolder = "generated-code/typescript-ows-api";
+        embeddedTemplateDir = templateDir = "typescript-ows-api";
+    }
 
     @Override
     public Map<String, Object> postProcessOperations(Map<String, Object> objs) {
@@ -29,6 +34,11 @@ public class TypeScriptOwsApiClientCodegen extends TypeScriptFetchClientCodegen 
             }
         }
         return objs;
+    }
+
+    @Override
+    public String getName() {
+        return "typescript-ows-api";
     }
 
     @Override
